@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="myViewTitleText" format="string" />
+    <attr name="myViewTitleTextColor" format="color" />
+    <attr name="myViewTitleTextSize" format="dimension" />
+
+    <declare-styleable name="MyDesignView">
+        <attr name="myViewTitleText" />
+        <attr name="myViewTitleTextColor" />
+        <attr name="myViewTitleTextSize" />
+    </declare-styleable>
+</resources>
