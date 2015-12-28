@@ -9,4 +9,16 @@
         <attr name="myViewTitleTextColor" />
         <attr name="myViewTitleTextSize" />
     </declare-styleable>
+
+    <attr name="firstColor" format="color" />
+    <attr name="secondColor" format="color" />
+    <attr name="circleWidth" format="dimension" />
+    <attr name="speed" format="integer" />
+
+    <declare-styleable name="CircleProcessBar">
+        <attr name="firstColor" />
+        <attr name="secondColor" />
+        <attr name="circleWidth" />
+        <attr name="speed" />
+    </declare-styleable>
 </resources>

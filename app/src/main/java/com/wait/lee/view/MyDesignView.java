@@ -12,7 +12,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -37,8 +39,7 @@ public class MyDesignView extends View
     /**
      * 绘制时控制文本绘制的范围
      */
-    private Rect mBound;
-    private Paint mPaint;
+    private Paint paint;
 
     public MyDesignView(Context context, AttributeSet attrs)
     {
@@ -88,96 +89,99 @@ public class MyDesignView extends View
         }
         a.recycle();
 
-        /**
-         * 获得绘制文本的宽和高
-         */
-        mPaint = new Paint();
-        mPaint.setTextSize(mTitleTextSize);
-        // mPaint.setColor(mTitleTextColor);
-        mBound = new Rect();
-        mPaint.getTextBounds(mTitleText, 0, mTitleText.length(), mBound);
-
-        this.setOnClickListener(new OnClickListener()
-        {
-
-            @Override
-            public void onClick(View v)
-            {
-                mTitleText = randomText();
-                postInvalidate();
-            }
-
-        });
 
     }
-    private String randomText()
-    {
-        Random random = new Random();
-        Set<Integer> set = new HashSet<Integer>();
-        while (set.size() < 4)
-        {
-            int randomInt = random.nextInt(10);
-            set.add(randomInt);
-        }
-        StringBuffer sb = new StringBuffer();
-        for (Integer i : set)
-        {
-            sb.append("" + i);
-        }
 
-        return sb.toString();
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-    {
-        // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int width = 0;
-        int height = 0;
-
-        /**
-         * 设置宽度
-         */
-        int specMode = MeasureSpec.getMode(widthMeasureSpec);
-        int specSize = MeasureSpec.getSize(widthMeasureSpec);
-        switch (specMode)
-        {
-            case MeasureSpec.EXACTLY:// 明确指定了
-                width = getPaddingLeft() + getPaddingRight() + specSize;
-                break;
-            case MeasureSpec.AT_MOST:// 一般为WARP_CONTENT
-                width = getPaddingLeft() + getPaddingRight() + mBound.width();
-                break;
-        }
-
-        /**
-         * 设置高度
-         */
-        specMode = MeasureSpec.getMode(heightMeasureSpec);
-        specSize = MeasureSpec.getSize(heightMeasureSpec);
-        switch (specMode)
-        {
-            case MeasureSpec.EXACTLY:// 明确指定了
-                height = getPaddingTop() + getPaddingBottom() + specSize;
-                break;
-            case MeasureSpec.AT_MOST:// 一般为WARP_CONTENT
-                height = getPaddingTop() + getPaddingBottom() + mBound.height();
-                break;
-        }
-
-        setMeasuredDimension(width, height);
-
-    }
 
     @Override
     protected void onDraw(Canvas canvas)
     {
-        mPaint.setColor(Color.GREEN);
-        canvas.drawRect(0, 0, getMeasuredWidth(), getMeasuredHeight(), mPaint);
+        paint =  new Paint();
+        paint.setAntiAlias(true);
 
-        mPaint.setColor(mTitleTextColor);
-        canvas.drawText(mTitleText, getWidth() / 2 - mBound.width() / 2, getHeight() / 2 + mBound.height() / 2, mPaint);
+        paint.setStyle(Paint.Style.STROKE);
+
+        canvas.translate(canvas.getWidth()/2, 200); //将位置移动画纸的坐标点:150,150
+
+        canvas.drawCircle(0, 0, 100, paint); //画圆圈
+
+
+
+        //使用path绘制路径文字
+
+        canvas.save();
+
+        canvas.translate(-75, -75);
+
+        Path path = new Path();
+
+        path.addArc(new RectF(0,0,150,150), -180, 180);
+
+        Paint citePaint = new Paint(paint);
+
+        citePaint.setTextSize(14);
+
+        citePaint.setStrokeWidth(1);
+
+        canvas.drawTextOnPath("wait.lee", path, 28, 0, citePaint);
+
+        canvas.restore();
+
+
+
+        Paint tmpPaint = new Paint(paint); //小刻度画笔对象
+
+        tmpPaint.setStrokeWidth(1);
+
+
+
+        float  y=100;
+
+        int count = 60; //总刻度数
+
+
+
+        for(int i=0 ; i <count ; i++){
+
+            if(i%5 == 0){
+                String num ;
+                canvas.drawLine(0f, y, 0, y + 12f, paint);
+                if(i / 5 + 6 > 12){
+                    num = String.valueOf(i / 5 - 6);
+                }else{
+                   num = String.valueOf(i / 5 + 6);
+                }
+                canvas.drawText(num, -4f, y+25f, tmpPaint);
+
+
+
+            }else{
+
+                canvas.drawLine(0f, y, 0f, y + 5f, tmpPaint);
+
+            }
+
+            canvas.rotate(360 / count, 0f, 0f); //旋转画纸
+
+        }
+
+
+
+        //绘制指针
+
+        tmpPaint.setColor(Color.GRAY);
+
+        tmpPaint.setStrokeWidth(4);
+
+        canvas.drawCircle(0, 0, 7, tmpPaint);
+
+        tmpPaint.setStyle(Paint.Style.FILL);
+
+        tmpPaint.setColor(Color.YELLOW);
+
+        canvas.drawCircle(0, 0, 5, tmpPaint);
+
+        canvas.drawLine(0, 10, 0, -65, paint);
     }
 }
 
