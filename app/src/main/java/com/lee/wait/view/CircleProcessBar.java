@@ -1,4 +1,4 @@
-package com.wait.lee.view;
+package com.lee.wait.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;

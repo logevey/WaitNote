@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="myViewTitleText" format="string" />
-    <attr name="myViewTitleTextColor" format="color" />
-    <attr name="myViewTitleTextSize" format="dimension" />
+    <attr name="timeSecond" format="integer" />
+    <attr name="timeMinute" format="integer" />
+    <attr name="timeHour" format="integer" />
 
-    <declare-styleable name="MyDesignView">
-        <attr name="myViewTitleText" />
-        <attr name="myViewTitleTextColor" />
-        <attr name="myViewTitleTextSize" />
+    <declare-styleable name="TimeView">
+        <attr name="timeSecond" />
+        <attr name="timeMinute" />
+        <attr name="timeHour" />
     </declare-styleable>
 
     <attr name="firstColor" format="color" />
