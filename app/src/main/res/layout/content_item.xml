@@ -23,5 +23,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="文字"
+        android:background="@drawable/text_view_border"
         />
 </LinearLayout>

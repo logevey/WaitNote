@@ -1,8 +1,10 @@
 package com.lee.wait.waitnote;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,15 +22,13 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private String[] iconName = {"通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声","通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声","通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声","通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声","通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声","通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声"};
-    private SimpleAdapter sim_adapter;
-    private GridView gview;
-    private List<Map<String, Object>> data_list;
 
+    //    private SwipeRefreshLayout swipeView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //标题栏
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -36,18 +36,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Hello,Wait");
 
 
-        gview = (GridView) findViewById(R.id.gridView);
-        //新建List
-        data_list = new ArrayList<Map<String, Object>>();
-        //获取数据
-        getData();
-        //新建适配器
-        String[] from = {"text"};
-        int[] to = {R.id.text};
-        sim_adapter = new SimpleAdapter(this, data_list, R.layout.content_item, from, to);
-        //配置适配器
 
-        gview.setAdapter(sim_adapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -59,14 +48,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public List<Map<String, Object>> getData() {
-        for (int i = 0; i < iconName.length; i++) {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("text", iconName[i]);
-            data_list.add(map);
-        }
-        return data_list;
-    }
 
 
 
