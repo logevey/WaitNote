@@ -3,7 +3,7 @@
     <color name="colorPrimary">#009999</color>
     <color name="colorPrimaryDark">#006B6B</color>
     <color name="colorAccent">#006B6B</color>
-    <color name="colorContent">@android:color/white</color>
-    <color name="colorBackground">@color/smokewhite</color>
-    <color name="smokewhite">#f5f5f5</color>
+    <color name="colorContent">#F5F5F5</color>
+    <color name="colorBackground">#EFEFEF</color>
+    <color name="colorBorder">#E5E5E5</color>
 </resources>

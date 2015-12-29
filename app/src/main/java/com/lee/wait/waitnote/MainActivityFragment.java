@@ -24,8 +24,7 @@ public class MainActivityFragment extends Fragment {
     private GridView gview;
     private SimpleAdapter sim_adapter;
     private List<Map<String, Object>> data_list;
-    private String[] iconName = {"通讯录"};
-
+    private String[] iconName = {"通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声"};
 
     public MainActivityFragment() {
     }
@@ -52,7 +51,7 @@ public class MainActivityFragment extends Fragment {
                         public void run() {
                             swipeView.setRefreshing(false);
                             double f = Math.random();
-                            addGridViewItem("test");
+                            addGridViewItemToStart("test");
                         }
                     },1000);
                 }
@@ -72,7 +71,6 @@ public class MainActivityFragment extends Fragment {
         //配置适配器
 
         gview.setAdapter(sim_adapter);
-        addGridViewItem("test");
         return view;
     }
 
@@ -86,11 +84,20 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    private void addGridViewItem(String strContent)
+    private void addGridViewItemToStart(String strContent)
     {
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("text", strContent);
-        data_list.add(map);
+        //data_list.add(map);
+        data_list.add(0,map);
+        sim_adapter.notifyDataSetChanged();
+    }
+    private void addGridViewItemToEnd(String strContent)
+    {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("text", strContent);
+        //data_list.add(map);
+        data_list.add(0,map);
         sim_adapter.notifyDataSetChanged();
     }
 
