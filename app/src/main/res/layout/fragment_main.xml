@@ -15,7 +15,7 @@
     android:weightSum="1">
 
 
-    <com.wait.lee.view.TimeView
+    <com.lee.wait.view.TimeView
         android:layout_width="200dp"
         android:layout_height="200dp"
         custom:timeHour="18"
