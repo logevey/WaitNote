@@ -101,5 +101,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/gridView"
         android:numColumns="2"
-        android:choiceMode="singleChoice" />
+        android:horizontalSpacing="@dimen/content_margin"
+        android:verticalSpacing="@dimen/content_margin"
+        android:stretchMode="columnWidth" />
 </LinearLayout>
