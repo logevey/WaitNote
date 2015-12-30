@@ -29,7 +29,6 @@ public class EditContentActivity extends SwipeBackActivity {
             public void onScrollStateChange(int state, float scrollPercent) {
 
             }
-
             @Override
             public void onEdgeTouch(int edgeFlag) {
                 vibrate(VIBRATE_DURATION);

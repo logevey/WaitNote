@@ -63,7 +63,7 @@ public class MainActivityFragment extends Fragment {
                         public void run() {
                             swipeView.setRefreshing(false);
                             double f = Math.random();
-                            addGridViewItemToStart("test");
+//                            addGridViewItemToStart(0,"test");
                         }
                     },1000);
                 }
@@ -81,17 +81,19 @@ public class MainActivityFragment extends Fragment {
         //新建List
         data_list = new ArrayList<Map<String, Object>>();
         List<NoteContent> noteContents = noteDatabase.getScrollData(0,noteDatabase.getCount());
-        for (int i = 0; i < noteContents.size(); i++) {
+        int resultSize =  noteContents.size();
+        for (int i = 0; i < resultSize; i++) {
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("text", i+":"+noteContents.get(i).getCategory()+":"+noteContents.get(i).getContent()+":"+noteContents.get(i).getTime());
-            data_list.add(map);
+            map.put("id",noteContents.get(i).getId());
+            map.put("text", i + ":" + noteContents.get(i).getId() + ":" + noteContents.get(i).getCategory() + ":" + noteContents.get(i).getContent()+":"+noteContents.get( i).getTime());
+            data_list.add(0,map);
         }
 
         gview = (GridView) view.findViewById(R.id.gridView);
 
         //新建适配器
-        String[] from = {"text"};
-        int[] to = {R.id.text};
+        String[] from = {"id","text"};
+        int[] to = {R.id.image,R.id.text};
         sim_adapter = new SimpleAdapter(view.getContext(), data_list, R.layout.content_item, from, to);
         //配置适配器
         gview.setAdapter(sim_adapter);
@@ -177,32 +179,34 @@ public class MainActivityFragment extends Fragment {
 
         return true;
     }
-    private void addGridViewItemToStart(String strContent)
+    private void addGridViewItemToStart(int id, String strContent)
     {
         HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("id",id);
         map.put("text", strContent);
         //data_list.add(map);
         data_list.add(0, map);
         sim_adapter.notifyDataSetChanged();
         noteDatabase.insert(new NoteContent(strContent,getCurrentTimeStr() ));
     }
-    private void addGridViewItemToEnd(String strContent)
-    {
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("text", strContent);
-        //data_list.add(map);
-        data_list.add(0, map);
-        sim_adapter.notifyDataSetChanged();
-    }
+//    private void addGridViewItemToEnd(String strContent)
+//    {
+//        HashMap<String, Object> map = new HashMap<String, Object>();
+//        map.put("text", strContent);
+//        //data_list.add(map);
+//        data_list.add(0, map);
+//        sim_adapter.notifyDataSetChanged();
+//    }
 
     private void deleteGridViewItem(int itemIndex)
     {
         int size = data_list.size();
         if( size > 0 && size > itemIndex )
         {
+            int id= (int) data_list.get(itemIndex).get("id");
+            noteDatabase.delete(id);
             data_list.remove(itemIndex);
             sim_adapter.notifyDataSetChanged();
-            noteDatabase.delete(itemIndex);
         }
     }
     private String getCurrentTimeStr(){
