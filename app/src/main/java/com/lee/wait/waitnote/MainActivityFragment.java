@@ -1,5 +1,6 @@
 package com.lee.wait.waitnote;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
 
@@ -69,8 +71,15 @@ public class MainActivityFragment extends Fragment {
         int[] to = {R.id.text};
         sim_adapter = new SimpleAdapter(view.getContext(), data_list, R.layout.content_item, from, to);
         //配置适配器
-
         gview.setAdapter(sim_adapter);
+        gview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent editContentIntent = new Intent();
+                editContentIntent.setClass(view.getContext(),EditContentActivity.class);
+                startActivity(editContentIntent);
+            }
+        });
         return view;
     }
 

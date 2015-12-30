@@ -5,5 +5,6 @@
     <dimen name="content_margin">5dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="corner">2dp</dimen>
+    <dimen name="nvi_width">150dp</dimen>
 
 </resources>

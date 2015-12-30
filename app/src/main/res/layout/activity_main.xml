@@ -26,19 +26,25 @@
         android:id="@+id/drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!-- 内容界面 -->
-        <include layout="@layout/content_main" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:orientation="vertical">
+
+            <!-- 内容界面 -->
+            <include layout="@layout/content_main" />
+        </LinearLayout>
         <!-- 侧滑菜单内容 -->
         <android.support.design.widget.NavigationView
             android:id="@+id/navigation_view"
-            android:paddingTop="?attr/actionBarSize"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/nvi_width"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:menu="@menu/drawer"
-            />
-    </android.support.v4.widget.DrawerLayout>
+            android:paddingTop="?attr/actionBarSize"
+            app:menu="@menu/menu_drawer" />
 
+    </android.support.v4.widget.DrawerLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
