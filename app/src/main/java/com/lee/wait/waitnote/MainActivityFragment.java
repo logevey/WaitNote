@@ -17,7 +17,12 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.lee.wait.database.NoteContent;
+import com.lee.wait.database.NoteDatabase;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +35,9 @@ public class MainActivityFragment extends Fragment {
     private GridView gview;
     private SimpleAdapter sim_adapter;
     private List<Map<String, Object>> data_list;
-    private String[] iconName = {"通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声"};
+   // private String[] iconName = {"通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声"};
     private View view;
+    private NoteDatabase noteDatabase;
     public MainActivityFragment() {
     }
 
@@ -65,11 +71,24 @@ public class MainActivityFragment extends Fragment {
             swipeView.setOnRefreshListener(orl);
         }
 
-        gview = (GridView) view.findViewById(R.id.gridView);
+        noteDatabase = new NoteDatabase(getActivity());
+//        for (int i = 0; i <  iconName.length; i++) {
+//
+//            String strTime = getCurrentTimeStr();
+//
+//            noteDatabase.insert(new NoteContent(iconName[i],strTime));
+//        }
         //新建List
         data_list = new ArrayList<Map<String, Object>>();
-        //获取数据
-        getData();
+        List<NoteContent> noteContents = noteDatabase.getScrollData(0,noteDatabase.getCount());
+        for (int i = 0; i < noteContents.size(); i++) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("text", i+":"+noteContents.get(i).getCategory()+":"+noteContents.get(i).getContent()+":"+noteContents.get(i).getTime());
+            data_list.add(map);
+        }
+
+        gview = (GridView) view.findViewById(R.id.gridView);
+
         //新建适配器
         String[] from = {"text"};
         int[] to = {R.id.text};
@@ -121,14 +140,15 @@ public class MainActivityFragment extends Fragment {
         return view;
     }
 
-    public List<Map<String, Object>> getData() {
-        for (int i = 0; i < iconName.length; i++) {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("text", iconName[i]);
-            data_list.add(map);
-        }
-        return data_list;
-    }
+
+//    public List<Map<String, Object>> getData() {
+//        for (int i = 0; i < iconName.length; i++) {
+//            Map<String, Object> map = new HashMap<String, Object>();
+//            map.put("text", iconName[i]);
+//            data_list.add(map);
+//        }
+//        return data_list;
+//    }
 
     private boolean dialog(){
         //先new出一个监听器，设置好监听
@@ -162,15 +182,16 @@ public class MainActivityFragment extends Fragment {
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("text", strContent);
         //data_list.add(map);
-        data_list.add(0,map);
+        data_list.add(0, map);
         sim_adapter.notifyDataSetChanged();
+        noteDatabase.insert(new NoteContent(strContent,getCurrentTimeStr() ));
     }
     private void addGridViewItemToEnd(String strContent)
     {
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("text", strContent);
         //data_list.add(map);
-        data_list.add(0,map);
+        data_list.add(0, map);
         sim_adapter.notifyDataSetChanged();
     }
 
@@ -181,7 +202,14 @@ public class MainActivityFragment extends Fragment {
         {
             data_list.remove(itemIndex);
             sim_adapter.notifyDataSetChanged();
+            noteDatabase.delete(itemIndex);
         }
+    }
+    private String getCurrentTimeStr(){
+        SimpleDateFormat formatter    =   new    SimpleDateFormat    ("yyyy年MM月dd日  HH:mm:ss");
+        Date curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
+        String    strTime    =    formatter.format(curDate);
+        return strTime;
     }
 
 }
