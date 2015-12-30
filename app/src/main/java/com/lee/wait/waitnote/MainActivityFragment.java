@@ -18,7 +18,6 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.lee.wait.database.NoteContent;
-import com.lee.wait.database.NoteDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
