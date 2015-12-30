@@ -18,6 +18,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.lee.wait.database.NoteContent;
+import com.lee.wait.database.NoteDatabaseService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class MainActivityFragment extends Fragment {
     private List<Map<String, Object>> data_list;
    // private String[] iconName = {"通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声"};
     private View view;
-    private NoteDatabase noteDatabase;
+    private NoteDatabaseService noteDatabase;
     public MainActivityFragment() {
     }
 
@@ -70,7 +71,7 @@ public class MainActivityFragment extends Fragment {
             swipeView.setOnRefreshListener(orl);
         }
 
-        noteDatabase = new NoteDatabase(getActivity());
+        noteDatabase = new NoteDatabaseService(getActivity());
 //        for (int i = 0; i <  iconName.length; i++) {
 //
 //            String strTime = getCurrentTimeStr();
