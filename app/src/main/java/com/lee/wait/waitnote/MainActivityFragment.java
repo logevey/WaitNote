@@ -1,10 +1,13 @@
 package com.lee.wait.waitnote;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,14 +31,14 @@ public class MainActivityFragment extends Fragment {
     private SimpleAdapter sim_adapter;
     private List<Map<String, Object>> data_list;
     private String[] iconName = {"通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声"};
-
+    private View view;
     public MainActivityFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        view = inflater.inflate(R.layout.fragment_main, container, false);
         //下拉刷新布局控件
         final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipeLayout);
         if (swipeView == null) {
@@ -76,8 +80,42 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent editContentIntent = new Intent();
-                editContentIntent.setClass(view.getContext(),EditContentActivity.class);
+                editContentIntent.setClass(view.getContext(), EditContentActivity.class);
+                editContentIntent.putExtra("str_content", (String) data_list.get(position).get("text"));
                 startActivity(editContentIntent);
+            }
+        });
+        gview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
+                final int tmpPosition = position;
+                DialogInterface.OnClickListener dialogOnclicListener=new DialogInterface.OnClickListener(){
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch(which){
+                            case Dialog.BUTTON_POSITIVE:
+                                Toast.makeText(view.getContext(), "已删除" , Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                                deleteGridViewItem(tmpPosition);
+                                break;
+                            case Dialog.BUTTON_NEGATIVE:
+//                                Toast.makeText(view.getContext(), "取消" + which, Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                                break;
+                        }
+                    }
+                };
+                //dialog参数设置
+                AlertDialog.Builder builder=new AlertDialog.Builder(view.getContext());  //先得到构造器
+                builder.setTitle("提示"); //设置标题
+                builder.setMessage("是否删除?"); //设置内容
+                builder.setIcon(R.mipmap.ic_launcher);//设置图标，图片id即可
+                builder.setPositiveButton("确认", dialogOnclicListener);
+                builder.setNegativeButton("取消", dialogOnclicListener);
+                builder.create().show();
+
+                return false;
             }
         });
         return view;
@@ -92,7 +130,33 @@ public class MainActivityFragment extends Fragment {
         return data_list;
     }
 
+    private boolean dialog(){
+        //先new出一个监听器，设置好监听
+        DialogInterface.OnClickListener dialogOnclicListener=new DialogInterface.OnClickListener(){
 
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which){
+                    case Dialog.BUTTON_POSITIVE:
+                        Toast.makeText(view.getContext(), "确认" + which, Toast.LENGTH_SHORT).show();
+                        break;
+                    case Dialog.BUTTON_NEGATIVE:
+                        Toast.makeText(view.getContext(), "取消" + which, Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        };
+        //dialog参数设置
+        AlertDialog.Builder builder=new AlertDialog.Builder(view.getContext());  //先得到构造器
+        builder.setTitle("提示"); //设置标题
+        builder.setMessage("是否删除?"); //设置内容
+        builder.setIcon(R.mipmap.ic_launcher);//设置图标，图片id即可
+        builder.setPositiveButton("确认", dialogOnclicListener);
+        builder.setNegativeButton("取消", dialogOnclicListener);
+        builder.create().show();
+
+        return true;
+    }
     private void addGridViewItemToStart(String strContent)
     {
         HashMap<String, Object> map = new HashMap<String, Object>();
@@ -110,12 +174,12 @@ public class MainActivityFragment extends Fragment {
         sim_adapter.notifyDataSetChanged();
     }
 
-    private void deleteGridViewItem()
+    private void deleteGridViewItem(int itemIndex)
     {
         int size = data_list.size();
-        if( size > 0 )
+        if( size > 0 && size > itemIndex )
         {
-            data_list.remove(data_list.size() - 1);
+            data_list.remove(itemIndex);
             sim_adapter.notifyDataSetChanged();
         }
     }
