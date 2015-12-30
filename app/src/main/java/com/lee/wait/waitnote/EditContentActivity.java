@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lee.wait.activity.swipeback.lib.SwipeBackLayout;
@@ -20,8 +21,8 @@ public class EditContentActivity extends SwipeBackActivity {
         setContentView(R.layout.activity_edit_content);
         Intent intent = getIntent();
         String strContent = intent.getStringExtra("str_content");
-        TextView tvContent = (TextView)findViewById(R.id.tvContent);
-        tvContent.setText(strContent);
+        EditText etContent = (EditText)findViewById(R.id.etContent);
+        etContent.setText(strContent);
 
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
