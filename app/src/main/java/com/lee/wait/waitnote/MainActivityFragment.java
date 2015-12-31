@@ -71,7 +71,7 @@ public class MainActivityFragment extends Fragment {
         cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
         gridView = (GridView) view.findViewById(R.id.gv_main_fragment);
         if (cursor != null) {
-            simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.content_item, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.iv_id, R.id.tv_content, R.id.tv_time}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.fragment_content_item, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.iv_id, R.id.tv_content, R.id.tv_time}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             gridView.setAdapter(simpleCursorAdapter);
         }
 

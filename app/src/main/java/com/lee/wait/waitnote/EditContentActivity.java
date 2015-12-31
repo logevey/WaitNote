@@ -1,21 +1,32 @@
 package com.lee.wait.waitnote;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Vibrator;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lee.wait.activity.swipeback.lib.SwipeBackLayout;
 import com.lee.wait.activity.swipeback.SwipeBackActivity;
 import com.lee.wait.database.NoteContent;
 import com.lee.wait.database.NoteDatabaseService;
 
-public class EditContentActivity extends SwipeBackActivity {
+public class EditContentActivity extends SwipeBackActivity implements View.OnClickListener {
 
     private static final String TAG = "EditContentActivity";
     private static final int VIBRATE_DURATION = 20;
@@ -23,17 +34,22 @@ public class EditContentActivity extends SwipeBackActivity {
     private EditText etContent;
     private LinearLayout llEditTool;
     private NoteContent noteContent;
+    private TextView tvTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_content);
-        noteContent = (NoteContent)getIntent().getSerializableExtra("noteContent");
+        noteContent = (NoteContent) getIntent().getSerializableExtra("noteContent");
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.tb_edit_content);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(noteContent.getCategory());
+        getSupportActionBar().setTitle("");
+        tvTitle = (TextView) findViewById(R.id.tv_edit_content_title);
+        tvTitle.setText(noteContent.getCategory());
+        tvTitle.setOnClickListener(this);
 
         llEditTool = (LinearLayout) findViewById(R.id.ll_edit_tool);
 
@@ -41,19 +57,7 @@ public class EditContentActivity extends SwipeBackActivity {
         etContent.setText(noteContent.getContent());
         etContent.setSelection(etContent.length());
         etContent.setFocusableInTouchMode(false);
-        etContent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (llEditTool.getVisibility() == View.VISIBLE) {
-                    llEditTool.setVisibility(View.GONE);
-                } else {
-                    llEditTool.setVisibility(View.VISIBLE);
-                }
-                etContent.setFocusableInTouchMode(true);
-                etContent.requestFocus();
-            }
-        });
+        etContent.setOnClickListener(this);
 
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
@@ -73,30 +77,13 @@ public class EditContentActivity extends SwipeBackActivity {
             }
         });
     }
+
     @Override
-    public boolean onKeyDown(int keyCode,KeyEvent event){
-        if (keyCode == KeyEvent.KEYCODE_BACK )
-        {
-            NoteDatabaseService noteDatabase = new NoteDatabaseService(this);
-            if(etContent.getText().toString().equals("")){
-                if(noteContent.getId()==0){
-
-                }else{
-                    noteDatabase.delete(noteContent.getId());
-                }
-            }else{
-                if(noteContent.getId()==0){
-                    noteContent.setContent(etContent.getText().toString());
-                    noteContent.setTime(MainActivity.getCurrentTimeStr());
-                    noteDatabase.insert(noteContent);
-                }else{
-                    noteContent.setContent(etContent.getText().toString());
-                    noteDatabase.update(noteContent);
-                }
-            }
-
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+           saveChangeContent();
         }
-        return super.onKeyDown(keyCode,event);
+        return super.onKeyDown(keyCode, event);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -104,37 +91,87 @@ public class EditContentActivity extends SwipeBackActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == android.R.id.home) {
-            NoteDatabaseService noteDatabase = new NoteDatabaseService(this);
-            if(etContent.getText().toString().equals("")){
-                if(noteContent.getId()==0){
-
-                }else{
-                    noteDatabase.delete(noteContent.getId());
-                }
-            }else{
-                if(noteContent.getId()==0){
-                    noteContent.setContent(etContent.getText().toString());
-                    noteContent.setTime(MainActivity.getCurrentTimeStr());
-                    noteDatabase.insert(noteContent);
-                }else{
-                    noteContent.setContent(etContent.getText().toString());
-                    noteDatabase.update(noteContent);
-                }
-            }
-            finish();
-            return true;
+        switch (id) {
+            case android.R.id.home:
+                saveChangeContent();
+                finish();
+                break;
+            default:
+                break;
         }
+        //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
     }
+
     private void vibrate(long duration) {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {
                 0, duration
         };
         vibrator.vibrate(pattern, -1);
+    }
+
+    private void saveChangeContent() {
+        NoteDatabaseService noteDatabase = new NoteDatabaseService(this);
+        if (etContent.getText().toString().equals("")) {
+            if (noteContent.getId() == 0) {
+
+            } else {
+                noteDatabase.delete(noteContent.getId());
+            }
+        } else {
+            if (noteContent.getId() == 0) {
+                noteContent.setCategory(tvTitle.getText().toString());
+                noteContent.setContent(etContent.getText().toString());
+                noteContent.setTime(MainActivity.getCurrentTimeStr());
+                noteDatabase.insert(noteContent);
+            } else {
+                noteContent.setCategory(tvTitle.getText().toString());
+                noteContent.setContent(etContent.getText().toString());
+                noteDatabase.update(noteContent);
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_edit_content_title:
+                Log.e(TAG, "textview");
+                final AlertDialog.Builder builder = new AlertDialog.Builder(EditContentActivity.this);
+                builder.setIcon(R.mipmap.ic_launcher);
+                //    通过LayoutInflater来加载一个xml的布局文件作为一个View对象
+                View view = LayoutInflater.from(EditContentActivity.this).inflate(R.layout.dialog_choose_category, null);
+                //    设置我们自己定义的布局文件作为弹出框的Content
+                builder.setView(view);
+
+                final ListView lvCategory = (ListView) view.findViewById(R.id.lv_category);
+                final String[] strs = new String[]{
+                        "first", "second", "third", "fourth", "fifth"
+                };
+                lvCategory.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, strs));
+                final Dialog dialog = builder.show();
+                lvCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        tvTitle.setText(strs[position]);
+                        dialog.dismiss();
+                    }
+                });
+
+
+                break;
+            case R.id.et_content:
+                if (llEditTool.getVisibility() == View.VISIBLE) {
+                    llEditTool.setVisibility(View.GONE);
+                } else {
+                    llEditTool.setVisibility(View.VISIBLE);
+                }
+                etContent.setFocusableInTouchMode(true);
+                etContent.requestFocus();
+                break;
+
+        }
     }
 }
