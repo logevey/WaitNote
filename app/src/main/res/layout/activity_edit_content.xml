@@ -6,14 +6,14 @@
     android:orientation="vertical"
     tools:context="com.lee.wait.waitnote.EditContentActivity">
     <android.support.v7.widget.Toolbar
-        android:id="@+id/tbEditContent"
+        android:id="@+id/tb_edit_content"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
     <EditText
-        android:id="@+id/etContent"
+        android:id="@+id/et_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/content_vertical__margin"
@@ -28,7 +28,7 @@
         android:inputType="textMultiLine" />
     <LinearLayout
         android:layout_width="match_parent"
-        android:id="@+id/llEditTool"
+        android:id="@+id/ll_edit_tool"
         android:paddingLeft="@dimen/content_horizontal_margin"
         android:paddingRight="@dimen/content_horizontal_margin"
         android:layout_weight="6"
@@ -39,12 +39,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_add"
-            android:id="@+id/imageButton" />
+            android:id="@+id/imgBtn_first" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_call"
-            android:id="@+id/imageButton2" />
+            android:id="@+id/imgBtn_second" />
     </LinearLayout>
 </LinearLayout>

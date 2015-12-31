@@ -1,18 +1,14 @@
 package com.lee.wait.waitnote;
 
 import android.content.Context;
-import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Vibrator;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.lee.wait.activity.swipeback.lib.SwipeBackLayout;
 import com.lee.wait.activity.swipeback.SwipeBackActivity;
@@ -33,16 +29,15 @@ public class EditContentActivity extends SwipeBackActivity {
         setContentView(R.layout.activity_edit_content);
         noteContent = (NoteContent)getIntent().getSerializableExtra("noteContent");
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.tbEditContent);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.tb_edit_content);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(noteContent.getCategory());
 
+        llEditTool = (LinearLayout) findViewById(R.id.ll_edit_tool);
 
-        llEditTool = (LinearLayout) findViewById(R.id.llEditTool);
-
-        etContent = (EditText) findViewById(R.id.etContent);
+        etContent = (EditText) findViewById(R.id.et_content);
         etContent.setText(noteContent.getContent());
         etContent.setSelection(etContent.length());
         etContent.setFocusableInTouchMode(false);
@@ -102,6 +97,38 @@ public class EditContentActivity extends SwipeBackActivity {
 
         }
         return super.onKeyDown(keyCode,event);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == android.R.id.home) {
+            NoteDatabaseService noteDatabase = new NoteDatabaseService(this);
+            if(etContent.getText().toString().equals("")){
+                if(noteContent.getId()==0){
+
+                }else{
+                    noteDatabase.delete(noteContent.getId());
+                }
+            }else{
+                if(noteContent.getId()==0){
+                    noteContent.setContent(etContent.getText().toString());
+                    noteContent.setTime(MainActivity.getCurrentTimeStr());
+                    noteDatabase.insert(noteContent);
+                }else{
+                    noteContent.setContent(etContent.getText().toString());
+                    noteDatabase.update(noteContent);
+                }
+            }
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
     private void vibrate(long duration) {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);

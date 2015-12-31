@@ -16,19 +16,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.GridView;
-import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.lee.wait.database.NoteContent;
 import com.lee.wait.database.NoteDatabaseService;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -49,7 +41,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_main, container, false);
         //下拉刷新布局控件
-        final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipeLayout);
+        final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.sl_main_fragment);
         if (swipeView == null) {
             Log.e(TAG, "Null");
         } else {
@@ -77,9 +69,9 @@ public class MainActivityFragment extends Fragment {
 
 
         cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
-        gridView = (GridView) view.findViewById(R.id.gridView);
+        gridView = (GridView) view.findViewById(R.id.gv_main_fragment);
         if (cursor != null) {
-            simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.content_item, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.ivId, R.id.tvContent, R.id.tvTime}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.content_item, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.iv_id, R.id.tv_content, R.id.tv_time}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             gridView.setAdapter(simpleCursorAdapter);
         }
 
