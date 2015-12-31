@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Vibrator;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -15,9 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +38,9 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
     private LinearLayout llEditTool;
     private NoteContent noteContent;
     private TextView tvTitle;
+    private Cursor cursor;
+    private NoteDatabaseService noteDatabaseService;
+    private SimpleCursorAdapter simpleCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,7 +156,11 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
                 final String[] strs = new String[]{
                         "first", "second", "third", "fourth", "fifth"
                 };
-                lvCategory.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, strs));
+                noteDatabaseService = new NoteDatabaseService(this);
+                cursor = noteDatabaseService.getRawScrollData(0, noteDatabaseService.getCount());
+                simpleCursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, new String[]{"category"}, new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+                lvCategory.setAdapter(simpleCursorAdapter);
                 final Dialog dialog = builder.show();
                 lvCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
