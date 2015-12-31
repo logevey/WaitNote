@@ -1,11 +1,12 @@
 package com.lee.wait.database;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Administrator on 2015/12/30.
  */
-public class NoteContent {
+public class NoteContent implements Serializable {
     static String  tbContentSql = "create table if not exists tb_content(id integer primary key autoincrement , category text not null , content text , time text);";
     private int id;
     private String category;
@@ -55,6 +56,7 @@ public class NoteContent {
 
 
     public NoteContent(String category, String content, String time) {
+        this.id = 0;
         this.category = category;
         this.content = content;
         this.time = time;

@@ -1,5 +1,6 @@
 package com.lee.wait.waitnote;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -19,7 +20,11 @@ import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 
+import com.lee.wait.database.NoteContent;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Hello,Wait");
+        getSupportActionBar().setTitle("所有");
         //滑动抽屉
         final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this , drawerLayout , toolbar,R.string.drawer_open,R.string.drawer_close);
@@ -51,15 +56,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()){
                     case R.id.item_one:
 //                        getSupportFragmentManager() .beginTransaction().replace((R.id.))
-                        toolbar.setTitle("我的动态");
+                        toolbar.setTitle(menuItem.getTitle());
                         break;
                     case R.id.item_two:
 //                        getSupportFragmentManager() .beginTransaction().replace((R.id.))
-                        toolbar.setTitle("我的留言");
+                        toolbar.setTitle(menuItem.getTitle());
                         break;
                     case R.id.item_three:
 //                        getSupportFragmentManager() .beginTransaction().replace((R.id.))
-                        toolbar.setTitle("附近的人");
+                        toolbar.setTitle(menuItem.getTitle());
                         break;
                 }
                 menuItem.setChecked(true);
@@ -74,8 +79,14 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "敬请期待", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "敬请期待", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                Intent editContentIntent = new Intent();
+                editContentIntent.setClass(view.getContext(), EditContentActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("noteContent", new NoteContent());
+                editContentIntent.putExtras(bundle);
+                startActivity(editContentIntent);
             }
         });
     }
@@ -103,5 +114,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public static  String getCurrentTimeStr() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日  HH:mm:ss");
+        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+        String strTime = formatter.format(curDate);
+        return strTime;
     }
 }

@@ -3,6 +3,7 @@ package com.lee.wait.waitnote;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -13,8 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.lee.wait.database.NoteContent;
@@ -31,13 +34,13 @@ import java.util.Map;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-
-    private GridView gview;
-    private SimpleAdapter sim_adapter;
-    private List<Map<String, Object>> data_list;
-   // private String[] iconName = {"通讯录", "日历", "照相机", "时钟", "游戏", "短信", "铃声"};
+    private static final String TAG = "MainActivityFragment";
+    private GridView gridView;
+    private SimpleCursorAdapter simpleCursorAdapter;
     private View view;
     private NoteDatabaseService noteDatabase;
+    private Cursor cursor;
+
     public MainActivityFragment() {
     }
 
@@ -48,77 +51,68 @@ public class MainActivityFragment extends Fragment {
         //下拉刷新布局控件
         final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipeLayout);
         if (swipeView == null) {
-            Log.e("MainActivity", "Null");
+            Log.e(TAG, "Null");
         } else {
-            Log.e("MainActivity", swipeView.toString());
+//            Log.e(TAG, swipeView.toString());
             swipeView.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
-
-            SwipeRefreshLayout.OnRefreshListener orl=new SwipeRefreshLayout.OnRefreshListener() {
+            SwipeRefreshLayout.OnRefreshListener orl = new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
                     swipeView.setRefreshing(true);
-                    Log.d("Swipe", "Refreshing Number");
-                    ( new Handler()).postDelayed(new Runnable() {
+//                    Log.d("Swipe", "Refreshing Number");
+                    (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+                            simpleCursorAdapter.changeCursor(cursor);
                             swipeView.setRefreshing(false);
-                            double f = Math.random();
-//                            addGridViewItemToStart(0,"test");
                         }
-                    },1000);
+                    }, 1000);
                 }
             };
             swipeView.setOnRefreshListener(orl);
         }
 
         noteDatabase = new NoteDatabaseService(getActivity());
-//        for (int i = 0; i <  iconName.length; i++) {
-//
-//            String strTime = getCurrentTimeStr();
-//
-//            noteDatabase.insert(new NoteContent(iconName[i],strTime));
-//        }
-        //新建List
-        data_list = new ArrayList<Map<String, Object>>();
-        List<NoteContent> noteContents = noteDatabase.getScrollData(0,noteDatabase.getCount());
-        int resultSize =  noteContents.size();
-        for (int i = 0; i < resultSize; i++) {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("id",noteContents.get(i).getId());
-            map.put("text", i + ":" + noteContents.get(i).getId() + ":" + noteContents.get(i).getCategory() + ":" + noteContents.get(i).getContent()+":"+noteContents.get( i).getTime());
-            data_list.add(0,map);
+
+
+        cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+        gridView = (GridView) view.findViewById(R.id.gridView);
+        if (cursor != null) {
+            simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.content_item, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.ivId, R.id.tvContent, R.id.tvTime}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            gridView.setAdapter(simpleCursorAdapter);
         }
 
-        gview = (GridView) view.findViewById(R.id.gridView);
 
-        //新建适配器
-        String[] from = {"id","text"};
-        int[] to = {R.id.image,R.id.text};
-        sim_adapter = new SimpleAdapter(view.getContext(), data_list, R.layout.content_item, from, to);
-        //配置适配器
-        gview.setAdapter(sim_adapter);
-        gview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent editContentIntent = new Intent();
                 editContentIntent.setClass(view.getContext(), EditContentActivity.class);
-                editContentIntent.putExtra("str_content", (String) data_list.get(position).get("text"));
+                Bundle bundle = new Bundle();
+                Log.e(TAG, cursor.getInt(0) + " " + cursor.getString(2));
+                bundle.putSerializable("noteContent", new NoteContent(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
+                editContentIntent.putExtras(bundle);
                 startActivity(editContentIntent);
             }
         });
-        gview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
-                final int tmpPosition = position;
-                DialogInterface.OnClickListener dialogOnclicListener=new DialogInterface.OnClickListener(){
+                DialogInterface.OnClickListener dialogOnclicListener = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch(which){
+                        switch (which) {
                             case Dialog.BUTTON_POSITIVE:
-                                Toast.makeText(view.getContext(), "已删除" , Toast.LENGTH_SHORT).show();
+                                Toast.makeText(view.getContext(), "已删除", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
-                                deleteGridViewItem(tmpPosition);
+//                                Log.e(TAG, cursor.getInt(0) + " " + cursor.getString(2));
+//                                Log.e(TAG, "数目:" + noteDatabase.getCount());
+                                noteDatabase.delete(cursor.getInt(0));
+//                                Log.e(TAG, "数目:" + noteDatabase.getCount());
+                                cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+                                simpleCursorAdapter.changeCursor(cursor);
                                 break;
                             case Dialog.BUTTON_NEGATIVE:
 //                                Toast.makeText(view.getContext(), "取消" + which, Toast.LENGTH_SHORT).show();
@@ -128,7 +122,7 @@ public class MainActivityFragment extends Fragment {
                     }
                 };
                 //dialog参数设置
-                AlertDialog.Builder builder=new AlertDialog.Builder(view.getContext());  //先得到构造器
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());  //先得到构造器
                 builder.setTitle("提示"); //设置标题
                 builder.setMessage("是否删除?"); //设置内容
                 builder.setIcon(R.mipmap.ic_launcher);//设置图标，图片id即可
@@ -142,78 +136,10 @@ public class MainActivityFragment extends Fragment {
         return view;
     }
 
-
-//    public List<Map<String, Object>> getData() {
-//        for (int i = 0; i < iconName.length; i++) {
-//            Map<String, Object> map = new HashMap<String, Object>();
-//            map.put("text", iconName[i]);
-//            data_list.add(map);
-//        }
-//        return data_list;
-//    }
-
-    private boolean dialog(){
-        //先new出一个监听器，设置好监听
-        DialogInterface.OnClickListener dialogOnclicListener=new DialogInterface.OnClickListener(){
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch(which){
-                    case Dialog.BUTTON_POSITIVE:
-                        Toast.makeText(view.getContext(), "确认" + which, Toast.LENGTH_SHORT).show();
-                        break;
-                    case Dialog.BUTTON_NEGATIVE:
-                        Toast.makeText(view.getContext(), "取消" + which, Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        };
-        //dialog参数设置
-        AlertDialog.Builder builder=new AlertDialog.Builder(view.getContext());  //先得到构造器
-        builder.setTitle("提示"); //设置标题
-        builder.setMessage("是否删除?"); //设置内容
-        builder.setIcon(R.mipmap.ic_launcher);//设置图标，图片id即可
-        builder.setPositiveButton("确认", dialogOnclicListener);
-        builder.setNegativeButton("取消", dialogOnclicListener);
-        builder.create().show();
-
-        return true;
+    @Override
+    public void onResume() {
+        super.onResume();
+        cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+        simpleCursorAdapter.changeCursor(cursor);
     }
-    private void addGridViewItemToStart(int id, String strContent)
-    {
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("id",id);
-        map.put("text", strContent);
-        //data_list.add(map);
-        data_list.add(0, map);
-        sim_adapter.notifyDataSetChanged();
-        noteDatabase.insert(new NoteContent(strContent,getCurrentTimeStr() ));
-    }
-//    private void addGridViewItemToEnd(String strContent)
-//    {
-//        HashMap<String, Object> map = new HashMap<String, Object>();
-//        map.put("text", strContent);
-//        //data_list.add(map);
-//        data_list.add(0, map);
-//        sim_adapter.notifyDataSetChanged();
-//    }
-
-    private void deleteGridViewItem(int itemIndex)
-    {
-        int size = data_list.size();
-        if( size > 0 && size > itemIndex )
-        {
-            int id= (int) data_list.get(itemIndex).get("id");
-            noteDatabase.delete(id);
-            data_list.remove(itemIndex);
-            sim_adapter.notifyDataSetChanged();
-        }
-    }
-    private String getCurrentTimeStr(){
-        SimpleDateFormat formatter    =   new    SimpleDateFormat    ("yyyy年MM月dd日  HH:mm:ss");
-        Date curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
-        String    strTime    =    formatter.format(curDate);
-        return strTime;
-    }
-
 }

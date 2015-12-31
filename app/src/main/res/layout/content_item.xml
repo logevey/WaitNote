@@ -9,19 +9,26 @@
 <!--为了记录这条内容的id-->
     <ImageView
         android:src="@mipmap/ic_launcher"
-        android:id="@+id/image"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="invisible"
+        android:id="@+id/ivId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         />
 
     <com.lee.wait.view.SquareTextView
-        android:id="@+id/text"
+        android:id="@+id/tvContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:padding="3dp"
+        android:gravity="start"
+        android:padding="@dimen/item_padding"
         android:text="文字"
         android:background="@drawable/text_view_border"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvTime"
+        android:layout_gravity="center_horizontal" />
 </LinearLayout>

@@ -83,7 +83,7 @@ public class NoteDatabaseService {
         List<NoteContent> noteContents = new ArrayList<NoteContent>();
         SQLiteDatabase database = ndbHelper.getReadableDatabase();
         return database.rawQuery(
-                "select id as _id ,category ,content,time from tb_content limit ?,?",
+                "select id as _id ,category ,content,time from tb_content order by time DESC limit ?,?",
                 new String[]{String.valueOf(startResult),
                         String.valueOf(maxResult)});
     }

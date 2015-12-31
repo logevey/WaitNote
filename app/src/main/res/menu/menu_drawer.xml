@@ -15,12 +15,12 @@
             <!--android:title="附近的人"></item>-->
         <item
             android:id="@+id/item_one"
-            android:title="我的动态"></item>
+            android:title="所有"></item>
         <item
             android:id="@+id/item_two"
-            android:title="我的留言"></item>
+            android:title="心情"></item>
         <item
             android:id="@+id/item_three"
-            android:title="附近的人"></item>
+            android:title="日记"></item>
     </group>
 </menu>
