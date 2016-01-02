@@ -1,21 +1,21 @@
 package com.lee.wait.waitnote;
 
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -24,7 +24,6 @@ import com.lee.wait.database.NoteDatabaseService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private ListView lvLeftMenu;
     private Cursor cursor;
+    private String title = "所有";
     private NoteDatabaseService noteDatabaseService;
     private SimpleCursorAdapter simpleCursorAdapter;
     @Override
@@ -43,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("所有");
+        getSupportActionBar().setTitle(title);
+
+        setDefaultFragment();
         //滑动抽屉
         final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_main);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this , drawerLayout , toolbar,R.string.drawer_open,R.string.drawer_close);
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         lvLeftMenu = (ListView) findViewById(R.id.lv_left_menu);
         noteDatabaseService = new NoteDatabaseService(this);
-        cursor = noteDatabaseService.getRawScrollData(0, noteDatabaseService.getCount());
+        cursor = noteDatabaseService.getRawScrollData("group by category");
         if (cursor != null) {
             simpleCursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, new String[]{"category"}, new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             lvLeftMenu.setAdapter(simpleCursorAdapter);
@@ -60,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                    simpleCursorAdapter.
+                    title = cursor.getString(1);
                     toolbar.setTitle(cursor.getString(1));
+                    switchFragment();
                     drawerLayout.closeDrawers();
                 }
             });
@@ -101,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent editContentIntent = new Intent();
                 editContentIntent.setClass(view.getContext(), EditContentActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("noteContent", new NoteContent());
+                bundle.putSerializable("noteContent", new NoteContent("测试","",""));
                 editContentIntent.putExtras(bundle);
                 startActivity(editContentIntent);
             }
@@ -109,7 +113,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cursor = noteDatabaseService.getRawScrollData("group by category");
+        simpleCursorAdapter.changeCursor(cursor);
+    }
 
+    private void setDefaultFragment()
+    {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        MainActivityFragment mainActivityFragment = new MainActivityFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("title",title);
+        mainActivityFragment.setArguments(bundle);
+        transaction.add(R.id.fragment_main, mainActivityFragment);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
+    }
+    private void switchFragment()
+    {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        MainActivityFragment mainActivityFragment = new MainActivityFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("title",title);
+        mainActivityFragment.setArguments(bundle);
+        transaction.add(R.id.fragment_main, mainActivityFragment);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

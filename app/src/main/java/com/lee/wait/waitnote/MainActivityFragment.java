@@ -5,10 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,16 +31,19 @@ public class MainActivityFragment extends Fragment {
     private GridView gridView;
     private SimpleCursorAdapter simpleCursorAdapter;
     private View view;
-    private NoteDatabaseService noteDatabase;
+    private NoteDatabaseService noteDatabaseService;
     private Cursor cursor;
-
+    private String title;
     public MainActivityFragment() {
+        super();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_main, container, false);
+        Bundle bundle = getArguments();
+        title = bundle.getString("title");
         //下拉刷新布局控件
         final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.sl_main_fragment);
         if (swipeView == null) {
@@ -55,7 +59,7 @@ public class MainActivityFragment extends Fragment {
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+                            cursor = noteDatabaseService.getRawScrollData(0, noteDatabaseService.getCount());
                             simpleCursorAdapter.changeCursor(cursor);
                             swipeView.setRefreshing(false);
                         }
@@ -65,10 +69,14 @@ public class MainActivityFragment extends Fragment {
             swipeView.setOnRefreshListener(orl);
         }
 
-        noteDatabase = new NoteDatabaseService(getActivity());
+        noteDatabaseService = new NoteDatabaseService(getActivity());
 
 
-        cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+        if(title.equals("所有")){
+            cursor = noteDatabaseService.getRawScrollData("");
+        }else{
+            cursor = noteDatabaseService.getRawScrollData("where category = '" + title+"'");
+        }
         gridView = (GridView) view.findViewById(R.id.gv_main_fragment);
         if (cursor != null) {
             simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.fragment_content_item, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.iv_id, R.id.tv_content, R.id.tv_time}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
@@ -99,11 +107,9 @@ public class MainActivityFragment extends Fragment {
                             case Dialog.BUTTON_POSITIVE:
                                 Toast.makeText(view.getContext(), "已删除", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
-//                                Log.e(TAG, cursor.getInt(0) + " " + cursor.getString(2));
-//                                Log.e(TAG, "数目:" + noteDatabase.getCount());
-                                noteDatabase.delete(cursor.getInt(0));
-//                                Log.e(TAG, "数目:" + noteDatabase.getCount());
-                                cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+//
+                                noteDatabaseService.delete(cursor.getInt(0));
+                                cursor = noteDatabaseService.getRawScrollData(0, noteDatabaseService.getCount());
                                 simpleCursorAdapter.changeCursor(cursor);
                                 break;
                             case Dialog.BUTTON_NEGATIVE:
@@ -131,7 +137,12 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        cursor = noteDatabase.getRawScrollData(0, noteDatabase.getCount());
+        if(title.equals("所有")){
+            cursor = noteDatabaseService.getRawScrollData("");
+        }else{
+            cursor = noteDatabaseService.getRawScrollData("where category = '" + title+"'");
+        }
+
         simpleCursorAdapter.changeCursor(cursor);
     }
 }

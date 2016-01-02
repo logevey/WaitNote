@@ -153,11 +153,9 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
                 builder.setView(view);
 
                 final ListView lvCategory = (ListView) view.findViewById(R.id.lv_category);
-                final String[] strs = new String[]{
-                        "first", "second", "third", "fourth", "fifth"
-                };
+
                 noteDatabaseService = new NoteDatabaseService(this);
-                cursor = noteDatabaseService.getRawScrollData(0, noteDatabaseService.getCount());
+                cursor = noteDatabaseService.getRawScrollData("group by category");
                 simpleCursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, new String[]{"category"}, new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
                 lvCategory.setAdapter(simpleCursorAdapter);
@@ -165,7 +163,7 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
                 lvCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        tvTitle.setText(strs[position]);
+                        tvTitle.setText(cursor.getString(1));
                         dialog.dismiss();
                     }
                 });

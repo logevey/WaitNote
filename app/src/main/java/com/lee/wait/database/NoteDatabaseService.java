@@ -88,6 +88,14 @@ public class NoteDatabaseService {
                         String.valueOf(maxResult)});
     }
 
+    // 获取分页数据，提供给SimpleCursorAdapter使用。
+    public Cursor getRawScrollData(String strLimit) {
+        List<NoteContent> noteContents = new ArrayList<NoteContent>();
+        SQLiteDatabase database = ndbHelper.getReadableDatabase();
+        return database.rawQuery("select id as _id ,category ,content,time from tb_content " + strLimit, null);
+    }
+
+
     public int getCount() {
         SQLiteDatabase database = ndbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("select count(*) from tb_content", null);
