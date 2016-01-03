@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                     final TextView etAddCategroyName = (TextView) viewMain.findViewById(R.id.et_add_category_name);
                     final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setIcon(R.mipmap.ic_launcher);
-                    builder.setTitle("输入名字：");
+                    builder.setTitle("输入文件夹名字：");
                     builder.setView(viewMain);
 
                     DialogInterface.OnClickListener dialogOnclicListener = new DialogInterface.OnClickListener() {
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                             switch (which) {
                                 case Dialog.BUTTON_POSITIVE:
                                     String categoryName = etAddCategroyName.getText().toString();
-                                    if (!categoryName.equals("")&&!categoryName.contains("'")) {
+                                    if (!categoryName.equals("") && !categoryName.contains("'")) {
                                         if (noteDatabaseService.insert(new NoteContent(categoryName, "", MainActivity.getCurrentTimeStr()))) {
                                             Log.e(TAG, "insert success");
                                         } else {
@@ -137,10 +137,10 @@ public class MainActivity extends AppCompatActivity {
                     builder.setNegativeButton("取消", dialogOnclicListener);
 
                     builder.create().show();
-                } else if(position>=0) {
+                } else if (position >= 0) {
                     //由于加了分割线
-                    title = noteContents.get((int)id).getCategory();
-                    toolbar.setTitle(noteContents.get((int)id).getCategory());
+                    title = noteContents.get((int) id).getCategory();
+                    toolbar.setTitle(noteContents.get((int) id).getCategory());
                     refreshLeftListView();
                     switchFragment();
                     drawerLayout.closeDrawers();
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 if (position >= noteContents.size()) {
 
 
-                } else if(!noteContents.get((int)id).getCategory().equals("所有")&&position>=0){
+                } else if (!noteContents.get((int) id).getCategory().equals("所有") && position >= 0) {
                     DialogInterface.OnClickListener dialogOnclicListener = new DialogInterface.OnClickListener() {
 
                         @Override
@@ -184,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
                     builder.setPositiveButton("确认", dialogOnclicListener);
                     builder.setNegativeButton("取消", dialogOnclicListener);
                     builder.create().show();
-
                 }
                 return false;
             }
@@ -214,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         refreshLeftListView();
     }
 
-    private void refreshLeftListView(){
+    private void refreshLeftListView() {
         noteContents = noteDatabaseService.getScrollData("where content = '' order by time");
         List<ListViewMenuItem> items = new ArrayList<ListViewMenuItem>();
         for (NoteContent noteContent : noteContents) {
@@ -225,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
         listViewMenuAdapter.changeItems(items);
         listViewMenuAdapter.notifyDataSetChanged();
     }
+
     private void setDefaultFragment() {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
