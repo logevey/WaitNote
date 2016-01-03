@@ -51,13 +51,13 @@
         <!--app:menu="@menu/menu_drawer" />-->
         <ListView
             android:id="@+id/lv_left_menu"
-            android:layout_width="@dimen/nvi_width"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="#ffffffff"
             android:clipToPadding="false"
             android:paddingTop="?attr/actionBarSize"
             android:divider="@null"
+            android:background="@color/colorBorder"
             android:listSelector="?attr/selectableItemBackground" />
 
     </android.support.v4.widget.DrawerLayout>

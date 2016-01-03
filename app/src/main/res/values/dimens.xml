@@ -7,7 +7,8 @@
     <dimen name="content_margin">5dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="corner">2dp</dimen>
-    <dimen name="nvi_width">60dp</dimen>
+    <dimen name="nvi_width">70dp</dimen>
     <dimen name="item_padding">10dp</dimen>
     <dimen name="title_font_size">22sp</dimen>
+    <dimen name="drawer_icon_size">24dp</dimen>
 </resources>

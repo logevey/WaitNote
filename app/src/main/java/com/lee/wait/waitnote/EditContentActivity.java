@@ -119,23 +119,23 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
     }
 
     private void saveChangeContent() {
-        NoteDatabaseService noteDatabase = new NoteDatabaseService(this);
+        NoteDatabaseService noteDatabaseService = new NoteDatabaseService(this);
         if (etContent.getText().toString().equals("")) {
             if (noteContent.getId() == 0) {
 
             } else {
-                noteDatabase.delete(noteContent.getId());
+                noteDatabaseService.delete(noteContent.getId());
             }
         } else {
             if (noteContent.getId() == 0) {
                 noteContent.setCategory(tvTitle.getText().toString());
                 noteContent.setContent(etContent.getText().toString());
                 noteContent.setTime(MainActivity.getCurrentTimeStr());
-                noteDatabase.insert(noteContent);
+                noteDatabaseService.insert(noteContent);
             } else {
                 noteContent.setCategory(tvTitle.getText().toString());
                 noteContent.setContent(etContent.getText().toString());
-                noteDatabase.update(noteContent);
+                noteDatabaseService.update(noteContent);
             }
         }
     }
@@ -155,7 +155,7 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
                 final ListView lvCategory = (ListView) view.findViewById(R.id.lv_category);
 
                 noteDatabaseService = new NoteDatabaseService(this);
-                cursor = noteDatabaseService.getRawScrollData("group by category");
+                cursor = noteDatabaseService.getRawScrollData("where content = '' order by time");
                 simpleCursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, new String[]{"category"}, new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
                 lvCategory.setAdapter(simpleCursorAdapter);

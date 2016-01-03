@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +58,7 @@ public class MainActivityFragment extends Fragment {
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            cursor = noteDatabaseService.getRawScrollData(0, noteDatabaseService.getCount());
+                            getCursor();
                             simpleCursorAdapter.changeCursor(cursor);
                             swipeView.setRefreshing(false);
                         }
@@ -72,14 +71,10 @@ public class MainActivityFragment extends Fragment {
         noteDatabaseService = new NoteDatabaseService(getActivity());
 
 
-        if(title.equals("所有")){
-            cursor = noteDatabaseService.getRawScrollData("");
-        }else{
-            cursor = noteDatabaseService.getRawScrollData("where category = '" + title+"'");
-        }
+        getCursor();
         gridView = (GridView) view.findViewById(R.id.gv_main_fragment);
         if (cursor != null) {
-            simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.fragment_content_item, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.iv_id, R.id.tv_content, R.id.tv_time}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.item_fragment_content, cursor, new String[]{"_id", "content", "time"}, new int[]{R.id.iv_id, R.id.tv_content, R.id.tv_time}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             gridView.setAdapter(simpleCursorAdapter);
         }
 
@@ -109,7 +104,7 @@ public class MainActivityFragment extends Fragment {
                                 dialog.dismiss();
 //
                                 noteDatabaseService.delete(cursor.getInt(0));
-                                cursor = noteDatabaseService.getRawScrollData(0, noteDatabaseService.getCount());
+                                getCursor();
                                 simpleCursorAdapter.changeCursor(cursor);
                                 break;
                             case Dialog.BUTTON_NEGATIVE:
@@ -137,12 +132,15 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(title.equals("所有")){
-            cursor = noteDatabaseService.getRawScrollData("");
-        }else{
-            cursor = noteDatabaseService.getRawScrollData("where category = '" + title+"'");
-        }
+        getCursor();
 
         simpleCursorAdapter.changeCursor(cursor);
+    }
+    public void getCursor(){
+        if(title.equals("所有")){
+            cursor = noteDatabaseService.getRawScrollData("where content != '' order by time DESC");
+        }else{
+            cursor = noteDatabaseService.getRawScrollData("where content != '' and category = '" + title+"' order by time DESC");
+        }
     }
 }

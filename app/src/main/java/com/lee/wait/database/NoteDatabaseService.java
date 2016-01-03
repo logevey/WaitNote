@@ -24,16 +24,23 @@ public class NoteDatabaseService {
         ndbHelper = new NoteDatabaseHelper(context);
     }
 
-    public void insert(NoteContent noteContent) {
+    public boolean insert(NoteContent noteContent) {
         SQLiteDatabase database = ndbHelper.getWritableDatabase();
         database.beginTransaction();
-        database.execSQL("insert into tb_content(category,content,time)values(?,?,?)",
-                new Object[]{noteContent.getCategory(), noteContent.getContent(), noteContent.getTime()});
-        // database.close();可以不关闭数据库，他里面会缓存一个数据库对象，如果以后还要用就直接用这个缓存的数据库对象。但通过
-        // context.openOrCreateDatabase(arg0, arg1, arg2)打开的数据库必须得关闭
-        database.setTransactionSuccessful();
-        database.endTransaction();
 
+        Cursor cursor = database.rawQuery("select * from tb_content where category=?", new String[]{noteContent.getCategory()});
+        if (cursor.getCount() != 0 &&noteContent.getContent() == ""){
+            database.endTransaction();
+            return false;
+        }else{
+            database.execSQL("insert into tb_content(category,content,time)values(?,?,?)",
+                    new Object[]{noteContent.getCategory(), noteContent.getContent(), noteContent.getTime()});
+            // database.close();可以不关闭数据库，他里面会缓存一个数据库对象，如果以后还要用就直接用这个缓存的数据库对象。但通过
+            // context.openOrCreateDatabase(arg0, arg1, arg2)打开的数据库必须得关闭
+            database.setTransactionSuccessful();
+            database.endTransaction();
+            return true;
+        }
     }
 
     public void update(NoteContent noteContent) {
@@ -64,35 +71,51 @@ public class NoteDatabaseService {
                     "delete from tb_content where id in(" + sb.toString() + ")", ids);
         }
     }
+    public void delete(String strLimit) {
+            SQLiteDatabase database = ndbHelper.getWritableDatabase();
+            database.execSQL("delete from tb_content " +strLimit);
+    }
 
-    public List<NoteContent> getScrollData(int startResult, int maxResult) {
+//    public List<NoteContent> getScrollData(int startResult, int maxResult) {
+//        List<NoteContent> noteContents = new ArrayList<NoteContent>();
+//        SQLiteDatabase database = ndbHelper.getReadableDatabase();
+//        Cursor cursor = database.rawQuery(
+//                "select * from tb_content limit ?,?",
+//                new String[]{String.valueOf(startResult),
+//                        String.valueOf(maxResult)});
+//        while (cursor.moveToNext()) {
+//            noteContents.add(new NoteContent(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
+//        }
+//        return noteContents;
+//    }
+
+
+    public List<NoteContent> getScrollData(String strLimit) {
         List<NoteContent> noteContents = new ArrayList<NoteContent>();
         SQLiteDatabase database = ndbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery(
-                "select * from tb_content limit ?,?",
-                new String[]{String.valueOf(startResult),
-                        String.valueOf(maxResult)});
+                "select * from tb_content " + strLimit , null);
         while (cursor.moveToNext()) {
             noteContents.add(new NoteContent(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
         }
         return noteContents;
     }
 
-    // 获取分页数据，提供给SimpleCursorAdapter使用。
-    public Cursor getRawScrollData(int startResult, int maxResult) {
-        List<NoteContent> noteContents = new ArrayList<NoteContent>();
-        SQLiteDatabase database = ndbHelper.getReadableDatabase();
-        return database.rawQuery(
-                "select id as _id ,category ,content,time from tb_content order by time DESC limit ?,?",
-                new String[]{String.valueOf(startResult),
-                        String.valueOf(maxResult)});
-    }
+//    // 获取分页数据，提供给SimpleCursorAdapter使用。
+//    public Cursor getRawScrollData(int startResult, int maxResult) {
+//        List<NoteContent> noteContents = new ArrayList<NoteContent>();
+//        SQLiteDatabase database = ndbHelper.getReadableDatabase();
+//        return database.rawQuery(
+//                "select id as _id ,category ,content,time from tb_content order by time DESC where limit ?,?",
+//                new String[]{String.valueOf(startResult),
+//                        String.valueOf(maxResult)});
+//    }
 
     // 获取分页数据，提供给SimpleCursorAdapter使用。
     public Cursor getRawScrollData(String strLimit) {
         List<NoteContent> noteContents = new ArrayList<NoteContent>();
         SQLiteDatabase database = ndbHelper.getReadableDatabase();
-        return database.rawQuery("select id as _id ,category ,content,time from tb_content " + strLimit, null);
+        return database.rawQuery("select id as _id ,category ,content,time from tb_content  " + strLimit , null);
     }
 
 
