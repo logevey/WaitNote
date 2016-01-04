@@ -57,7 +57,7 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
         tvTitle.setText(noteContent.getCategory());
         tvTitle.setOnClickListener(this);
 
-        llEditTool = (LinearLayout) findViewById(R.id.ll_edit_tool);
+//        llEditTool = (LinearLayout) findViewById(R.id.ll_edit_tool);
 
         etContent = (EditText) findViewById(R.id.et_content);
         etContent.setText(noteContent.getContent());
@@ -171,11 +171,11 @@ public class EditContentActivity extends SwipeBackActivity implements View.OnCli
 
                 break;
             case R.id.et_content:
-                if (llEditTool.getVisibility() == View.VISIBLE) {
-                    llEditTool.setVisibility(View.GONE);
-                } else {
-                    llEditTool.setVisibility(View.VISIBLE);
-                }
+//                if (llEditTool.getVisibility() == View.VISIBLE) {
+//                    llEditTool.setVisibility(View.GONE);
+//                } else {
+//                    llEditTool.setVisibility(View.VISIBLE);
+//                }
                 etContent.setFocusableInTouchMode(true);
                 etContent.requestFocus();
                 break;

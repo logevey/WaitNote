@@ -37,25 +37,25 @@
         android:gravity="left"
         android:background="@null"
         android:inputType="textMultiLine" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:id="@+id/ll_edit_tool"
-        android:paddingLeft="@dimen/content_horizontal_margin"
-        android:paddingRight="@dimen/content_horizontal_margin"
-        android:layout_weight="6"
-        android:visibility="gone"
-        android:layout_height="match_parent">
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:id="@+id/ll_edit_tool"-->
+        <!--android:paddingLeft="@dimen/content_horizontal_margin"-->
+        <!--android:paddingRight="@dimen/content_horizontal_margin"-->
+        <!--android:layout_weight="6"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_height="match_parent">-->
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_add"
-            android:id="@+id/imgBtn_first" />
+        <!--<ImageButton-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@android:drawable/ic_menu_add"-->
+            <!--android:id="@+id/imgBtn_first" />-->
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_call"
-            android:id="@+id/imgBtn_second" />
-    </LinearLayout>
+        <!--<ImageButton-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@android:drawable/ic_menu_call"-->
+            <!--android:id="@+id/imgBtn_second" />-->
+    <!--</LinearLayout>-->
 </LinearLayout>
